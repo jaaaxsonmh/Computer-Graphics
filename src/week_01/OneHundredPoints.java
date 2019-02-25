@@ -3,6 +3,7 @@ package week_01;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Random;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -31,14 +32,27 @@ public class OneHundredPoints implements GLEventListener {
         for(int i = 0; i <=100; i++) {
             gl.glPointSize(8); // has to be specified before GL_POINTS begins
             gl.glBegin(GL2.GL_POINTS); //indicates we want to draw one or more points
-            gl.glColor3f(1.0f, 0f, 0f);
-            gl.glVertex2f(-0.9f, 0.5f);
+            gl.glColor3f(getColour(), getColour(), getColour());
+            gl.glVertex2f(getPosition(), getPosition());
             gl.glEnd();
         }
 
         gl.glFlush();
 
     }
+
+    public float getPosition(){
+        float min = -1.0f;
+        float max = 1.0f;
+        return min + new Random().nextFloat() * (max - min);
+    }
+
+    public float getColour(){
+            float min = 0;
+        float max = 1;
+        return min + new Random().nextFloat() * (max - min);
+    }
+
 
     @Override
     public void dispose(GLAutoDrawable drawable) {
@@ -60,6 +74,7 @@ public class OneHundredPoints implements GLEventListener {
 
     public static void main(String[] args) {
         Frame frame = new Frame("Three little points");
+        Random rand = new Random();
         GLProfile profile = GLProfile.get(GLProfile.GL2);
         GLCapabilities capabilities = new GLCapabilities(profile);
         GLCanvas canvas = new GLCanvas(capabilities);
