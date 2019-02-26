@@ -3,41 +3,60 @@ package week_01;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Random;
 
-import com.jogamp.opengl.*;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.Animator;
 
+
 /**
- * Draws a line based on x,y coordinates stored in an array
+ * Draws three points
  * @author jwhalley
  *
  */
-public class TwoTriangles implements GLEventListener {
 
+public class TenGrids implements GLEventListener {
+
+    float GRID_OFFSET = 0.2f;
 
     @Override
     public void display(GLAutoDrawable drawable) {
-
         GL2 gl = drawable.getGL().getGL2();
-        // clear the drawing area
+        //clear the drawing canvas
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
-        gl.glBegin(GL.GL_TRIANGLES);
 
+        gl.glColor3d(0.0, 1.0, 0.0);
+        gl.glBegin(GL2.GL_LINES);
 
+        float column = -1.0f;
 
-        gl.glColor3f(0.0f, 0.0f, 1.0f); // Blue
-        gl.glVertex2f(-0.4f, -0.0f);
-        gl.glVertex2f(0.0f, 0.8f);
-        gl.glVertex2f(0.4f, 0.0f);
-        gl.glColor3f(1.0f, 0.0f, 0.0f); // Red
-        gl.glVertex2f(-0.1f, 0.3f);
-        gl.glVertex2f(0.7f, 0.3f);
-        gl.glVertex2f(0.3f, -0.5f);
+        while (column <= 1.0f) {
+            float row = -1.0f;
 
+            while (row <= 1.0f) {
+                float startRow = row + GRID_OFFSET;
+
+                // draw horizontal lines
+                gl.glVertex2f(row, column);
+                gl.glVertex2f(startRow, column);
+
+                // draw vertical line
+
+                gl.glVertex2f(startRow, column);
+                gl.glVertex2f(startRow, column + GRID_OFFSET);
+
+                row = startRow;
+            }
+
+            column += GRID_OFFSET;
+        }
         gl.glEnd();
         gl.glFlush();
-
 
     }
 
@@ -60,12 +79,13 @@ public class TwoTriangles implements GLEventListener {
     }
 
     public static void main(String[] args) {
-        Frame frame = new Frame("A line built from a vertex array");
+        Frame frame = new Frame("Three little points");
+        Random rand = new Random();
         GLProfile profile = GLProfile.get(GLProfile.GL2);
         GLCapabilities capabilities = new GLCapabilities(profile);
         GLCanvas canvas = new GLCanvas(capabilities);
-        TwoTriangles twoTriangles = new TwoTriangles();
-        canvas.addGLEventListener(twoTriangles);
+        TenGrids threePts = new TenGrids();
+        canvas.addGLEventListener(threePts);
         frame.add(canvas);
         frame.setSize(640, 480);
 
@@ -76,12 +96,9 @@ public class TwoTriangles implements GLEventListener {
                 // Run this on another thread than the AWT event queue to
                 // make sure the call to Animator.stop() completes before
                 // exiting
-                new Thread(new Runnable() {
-
-                    public void run() {
-                        animator.stop();
-                        System.exit(0);
-                    }
+                new Thread(() -> {
+                    animator.stop();
+                    System.exit(0);
                 }).start();
             }
         });
@@ -90,7 +107,6 @@ public class TwoTriangles implements GLEventListener {
         frame.setVisible(true);
 
         canvas.requestFocusInWindow();
-
     }
 
 }
